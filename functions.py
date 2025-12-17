@@ -7,25 +7,6 @@ import seaborn as sns
 import warnings
 warnings.filterwarnings('ignore')
 
-def get_data(file_path='gaming_anxiety_data.csv'):
-    
-    # Load and return the gaming anxiety dataset
-    
-    # Parameters:
-    # file_path (str): Path to the CSV file
-    
-    # Returns:
-    # pd.DataFrame: Loaded dataset
-    
-    try:
-        df = pd.read_csv(file_path)
-        print(f"Dataset loaded successfully. Shape: {df.shape}")
-        print(f"Columns: {df.columns.tolist()}")
-        return df
-    except FileNotFoundError:
-        print(f"Error: File not found at {file_path}")
-        return None
-
 def clean_data(df):
     
     # Clean the gaming anxiety dataset
@@ -58,6 +39,15 @@ def clean_data(df):
         for col in categorical_cols:
             if df_clean[col].isnull().sum() > 0:
                 df_clean[col].fillna(df_clean[col].mode()[0], inplace=True)
+
+    # Remove rows with ANY missing values
+    rows_before = len(df_clean)
+    df_clean = df_clean.dropna()
+    rows_after = len(df_clean)
+    rows_removed = rows_before - rows_after
+    print(f"Removed {rows_removed} rows with missing values")
+
+    
     
     # Remove duplicates to help with ML training
     initial_rows = len(df_clean)
@@ -82,3 +72,36 @@ def encode_features(data):
             label_encoders[col] = le
 
     return data
+
+def split_data(X, y, test_size=0.2, random_state=42):
+    
+    # Split data into train and test sets
+    
+    # Parameters:
+    # X : Features
+    # y : Targets
+    # test_size: Percentage for testing set
+    # random_state: Random seed so we can recreate results
+    
+    # Returns:
+    # X_train, X_test, y_train, y_test
+    
+    return train_test_split(X, y, test_size=test_size, random_state=random_state)
+
+def scale_features(X_train, X_test):
+    
+    # Scale features using StandardScaler
+    
+    # Parameters:
+    # X_train : Training features
+    # X_test (): Test features
+    
+    # Returns:
+    # Scaled X_train, X_test, and the scaler object
+    
+    scaler = StandardScaler()
+    X_train_scaled = scaler.fit_transform(X_train)
+    X_test_scaled = scaler.transform(X_test)
+    return X_train_scaled, X_test_scaled, scaler
+
+
