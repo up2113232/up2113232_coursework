@@ -66,3 +66,19 @@ def clean_data(df):
     print(f"Removed {duplicates_removed} duplicate rows")
     
     return df_clean
+
+def encode_features(data):
+    
+    # Encode categorical features for ML models
+         
+    label_encoders = {}
+    
+    for col in ['GADE', 'Game', 'earnings', 'whyplay', 'League', 
+            'Gender', 'Work', 'Playstyle']:
+        
+        if col in data.columns:
+            le = LabelEncoder()
+            data[col] = le.fit_transform(data[col].astype(str))
+            label_encoders[col] = le
+
+    return data
