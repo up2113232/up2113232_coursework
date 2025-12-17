@@ -321,4 +321,247 @@ def plot_mae(all_results):
 
     return df
 
+def plot_r2_values(y_test, y_pred, target_columns):
+      
+    #Calculates and visualises R-squared scores for each target variable for a single model.  
+    #Uses the same style as plot_r2() function.
+
+    #R-squared (R²) is a statistical measure that shows how well a model's predictions match the actual data.
+    #A score of 1 means perfect predictions, 0 means no better than just guessing the average, 
+    #and negative values mean the model is performing worse than a simple average.
+
+    #Parameters:
+        #y_test (pd.DataFrame): The actual true values from your test dataset.
+        #y_pred (np.ndarray): The values your model predicted for the test data.
+        #target_columns (list): A list of the names of the target variables you're predicting.
+                               
+      
+
+    # First, we calculate the R² score for each target variable separately
+    # We create an empty dictionary to store the scores
+    r2_scores = {}
+    
+    # Print a header so we can see the results clearly
+    print("\n--- R-squared Scores ---")
+    
+    # Loop through each target variable
+    for i, target_col in enumerate(target_columns):
+        # Calculate R² for this specific target
+        # y_test.iloc[:, i] gets all rows for column i (the current target)
+        # y_pred[:, i] gets all predictions for the same target
+        r2 = r2_score(y_test.iloc[:, i], y_pred[:, i])
+        
+        # Store the score in our dictionary with the target name as the key
+        r2_scores[target_col] = r2
+        
+        # Print the result in a readable format
+        print(f"R-squared for {target_col}: {r2:.4f}")
+
+    # Now we create a list of the target names from our dictionary
+    # This will be used for labelling the bars on our graph
+    targets = list(r2_scores.keys())
+
+    # We choose specific colours for each bar so they're easy to distinguish
+    # These colours will be used consistently across all our plots
+    bar_colours = ['red', 'green', 'blue']
+
+    # We need to set the y-axis limits for our graph
+    # This makes sure all bars fit nicely and we can compare them easily
+    all_r2_scores = list(r2_scores.values())
+    
+    # Calculate the minimum value for the y-axis
+    # We use min(0.0, ...) because R² can be negative (bad models)
+    # We subtract 0.05 to give a little space below the lowest bar
+    min_r2 = min(0.0, min(all_r2_scores)) - 0.05
+    
+    # Calculate the maximum value for the y-axis
+    # We add 0.05 to give space for the value labels above the bars
+    max_r2 = max(all_r2_scores) + 0.05
+
+    # Create a new figure for our plot
+    # figsize=(8, 5) means 8 inches wide by 5 inches tall
+    fig, ax = plt.subplots(figsize=(8, 5))
+
+    # Set up the positions for our bars on the x-axis
+    # np.arange creates evenly spaced numbers: [0, 1, 2, ...]
+    x = np.arange(len(targets))
+    
+    # Set the bar width to 1.0 - this removes any gaps between bars
+    # Makes the bars look like they're touching each other
+    width = 1.0
+
+    # Create the actual bar chart
+    # x: where each bar goes on the x-axis
+    # all_r2_scores: the height of each bar (the R² values)
+    # width: how wide each bar is
+    # colour: what colour each bar should be
+    # alpha=0.8: opacity
+    bars = ax.bar(x, all_r2_scores, width, color=bar_colours, alpha=0.8)
+
+    # Now we add labels and titles to make the graph clear
+    ax.set_xlabel('Target')  # Label for the x-axis
+    ax.set_ylabel('R² Score')  # Label for the y-axis
+    ax.set_title('R² Scores by Target Variable')  # Main title of the graph
+    
+    # Set where the ticks should go on the x-axis
+    ax.set_xticks(x)
+    
+    # Add the target names below each bar
+    # rotation=45: tilt the labels 45 degrees so they don't overlap
+    # ha='right': right-align the labels for better readability
+    ax.set_xticklabels(targets, rotation=45, ha='right')
+    
+    # Add a grid to make it easier to read the values
+    # alpha=0.3 makes the grid lines faint so they don't distract from the bars
+    ax.grid(True, alpha=0.3)
+
+    
+    # Set the limits of the y-axis using our calculated min and max values
+    ax.set_ylim(min_r2, max_r2)
+
+    # Add the actual R² values as text on top of each bar
+    # This makes it easy to see the exact numbers
+    for bar in bars:
+        # Get the height of this bar (the R² value)
+        height = bar.get_height()
+        
+        # Add text at the top centre of the bar
+        # bar.get_x() + bar.get_width() / 2: calculates the centre of the bar
+        # height + 0.005: position slightly above the top of the bar
+        # f'{height:.3f}': format the number to 3 decimal places
+        # ha='center': centre the text horizontally
+        # va='bottom': align the bottom of the text to the position
+        # fontsize=8: make the text a bit smaller so it fits nicely
+        ax.text(bar.get_x() + bar.get_width() / 2,
+                height + 0.005, f'{height:.3f}',
+                ha='center', va='bottom', fontsize=8)
+
+    # Adjust the layout to make sure everything fits without overlapping
+    plt.tight_layout()
+    
+    # Finally, display the plot
+    plt.show()
+
+def plot_mae_values(y_test, y_pred, target_columns):
+    
+    #Calculates and visualises Mean Absolute Error (MAE) scores for each target variable.
+    #Uses the same style as plot_mae() function.
+
+    #Mean Absolute Error (MAE) measures how far off your predictions are from the actual values.
+    #It calculates the average size of errors, ignoring whether they're positive or negative.
+    #A lower MAE means your model's predictions are closer to the true values.
+    
+    #Parameters:
+        #y_test (pd.DataFrame): The actual true values from your test dataset.
+        #y_pred (np.ndarray): The values your model predicted for the test data.
+        #target_columns (list): A list of the names of the target variables you're predicting.
+
+    # First, we calculate the MAE score for each target variable separately
+    # We create an empty dictionary to store the scores
+    mae_scores = {}
+    
+    # Print a header so we can see the results clearly
+    print("\n--- Mean Absolute Error Scores ---")
+    
+    # Loop through each target variable
+    for i, target_col in enumerate(target_columns):
+        # Calculate MAE for this specific target
+        # y_test.iloc[:, i] gets all rows for column i (the current target)
+        # y_pred[:, i] gets all predictions for the same target
+        mae = mean_absolute_error(y_test.iloc[:, i], y_pred[:, i])
+        
+        # Store the score in our dictionary with the target name as the key
+        mae_scores[target_col] = mae
+        
+        # Print the result in a readable format
+        print(f"MAE for {target_col}: {mae:.4f}")
+
+    # Now we create a list of the target names from our dictionary
+    # This will be used for labelling the bars on our graph
+    targets = list(mae_scores.keys())
+
+    # We choose specific colours for each bar so they're easy to distinguish
+    # These colours will be used consistently across all our plots
+    # Red, green, and blue bars will match the R² plot colours
+    bar_colours = ['red', 'green', 'blue']
+
+    # We need to set the y-axis limits for our graph
+    # This makes sure all bars fit nicely and we can compare them easily
+    all_mae_scores = list(mae_scores.values())
+    
+    # Calculate the minimum value for the y-axis
+    # We use min(0.0, ...) because MAE should never be negative (errors are always positive)
+    # We subtract 0.1 to give a little space below the lowest bar
+    min_mae = min(0.0, min(all_mae_scores)) - 0.1
+    
+    # Calculate the maximum value for the y-axis
+    # We add 0.1 to give space for the value labels above the bars
+    max_mae = max(all_mae_scores) + 0.1
+
+    # Create a new figure for our plot
+    # figsize=(8, 5) means 8 inches wide by 5 inches tall
+    fig, ax = plt.subplots(figsize=(8, 5))
+
+    # Set up the positions for our bars on the x-axis
+    # np.arange creates evenly spaced numbers: [0, 1, 2, ...]
+    x = np.arange(len(targets))
+    
+    # Set the bar width to 1.0 - this removes any gaps between bars
+    # Makes the bars look like they're touching each other
+    width = 1.0
+
+    # Create the actual bar chart
+    # x: where each bar goes on the x-axis
+    # all_mae_scores: the height of each bar (the MAE values)
+    # width: how wide each bar is
+    # colour: what colour each bar should be
+    # alpha=0.8: makes the bars slightly transparent (80% opaque)
+    bars = ax.bar(x, all_mae_scores, width, color=bar_colours, alpha=0.8)
+
+    # Now we add labels and titles to make the graph clear
+    ax.set_xlabel('Target')  # Label for the x-axis
+    ax.set_ylabel('MAE Score')  # Label for the y-axis
+    ax.set_title('MAE Scores by Target Variable')  # Main title of the graph
+    
+    # Set where the ticks (markers) should go on the x-axis
+    ax.set_xticks(x)
+    
+    # Add the target names below each bar
+    # rotation=45: tilt the labels 45 degrees so they don't overlap
+    # ha='right': right-align the labels for better readability
+    ax.set_xticklabels(targets, rotation=45, ha='right')
+    
+    # Add a grid to make it easier to read the values
+    # alpha=0.3 makes the grid lines faint so they don't distract from the bars
+    ax.grid(True, alpha=0.3)
+    
+    # Add a horizontal line at y=0 for reference
+    # This helps see the baseline (though MAE should never be below 0)
+    ax.axhline(y=0, color='black', linewidth=0.5)
+    
+    # Set the limits of the y-axis using our calculated min and max values
+    ax.set_ylim(min_mae, max_mae)
+
+    # Add the actual MAE values as text on top of each bar
+    # This makes it easy to see the exact numbers
+    for bar in bars:
+        # Get the height of this bar (the MAE value)
+        height = bar.get_height()
+        
+        # Add text at the top centre of the bar
+        # bar.get_x() + bar.get_width() / 2: calculates the centre of the bar
+        # height + 0.005: position slightly above the top of the bar
+        # f'{height:.3f}': format the number to 3 decimal places
+        # ha='center': centre the text horizontally
+        # va='bottom': align the bottom of the text to the position
+        # fontsize=8: make the text a bit smaller so it fits nicely
+        ax.text(bar.get_x() + bar.get_width() / 2,
+                height + 0.005, f'{height:.3f}',
+                ha='center', va='bottom', fontsize=8)
+
+    # Adjust the layout to make sure everything fits without overlapping
+    plt.tight_layout()
+    
+    # Finally, display the plot
+    plt.show()
 
