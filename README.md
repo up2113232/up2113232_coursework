@@ -29,6 +29,6 @@ Q3 - Contains the notebook file for exploring how different activation functions
 
 I recommend reading these notebooks in order to fully understand how the code works.
 
-To understand the custom functions used in these notebooks, there is the 'functions.py' containing each function with comments to help you follow the processes.
+To understand the custom functions used in these notebooks, there is the 'functions.py' containing each function with comments to help you follow the processes. In order to use the functions in the code, this file must be uploaded to Google Colab when running the notebook.
 
 There are also a series of libraries and dependencies that are required to run the code in Google Colab, these can be found inside the 'dependencies.txt' file, along with an explanation for how to install them inside the Google Colab website.
