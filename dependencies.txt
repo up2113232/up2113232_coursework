@@ -6,12 +6,26 @@ pandas>=1.3.0
 matplotlib>=3.4.0
 seaborn>=0.11.0
 
-# Machine learning
+# Machine learning libraries
 scikit-learn>=1.0.0
 
-# Jupyter (to run the notebooks)
-jupyter>=1.0.0
-notebook>=6.4.0
+Here is a step-by-step guide on how to install them inside Google Colab.
 
-# Optional: for virtual environment
-ipykernel>=6.0.0
+1. Go to Google Colab and sign in
+2. Create a new notebook and create a code cell
+3. Inside the code cell, type the following code:
+
+!pip install [insert library here]>=[insert version here]
+
+An example of this:
+
+!pip install numpy>=1.21.0
+
+If this fails, check your syntax
+If this still fails, try installing without the numbers
+
+An example:
+
+!pip install numpy
+
+After all of these dependencies are installed, you are ready to download and open the notebooks from the repository.
